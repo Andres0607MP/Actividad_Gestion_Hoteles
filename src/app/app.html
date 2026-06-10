@@ -1,20 +1,7 @@
-<main class="min-h-screen bg-slate-50 text-slate-900">
-  <header class="border-b border-slate-200 bg-white">
-    <div class="mx-auto flex flex-wrap items-center justify-between gap-3 px-4 py-4 max-w-6xl">
-      <div>
-        <a routerLink="/dashboard" class="text-lg font-semibold text-slate-900">Hotel Manager</a>
-      </div>
-      <nav class="flex flex-wrap gap-2 text-sm">
-        <a routerLink="/login" class="rounded-full px-3 py-2 text-slate-600 hover:bg-slate-100">Login</a>
-        <a routerLink="/registro" class="rounded-full px-3 py-2 text-slate-600 hover:bg-slate-100">Registro</a>
-        <a routerLink="/dashboard" class="rounded-full px-3 py-2 text-slate-600 hover:bg-slate-100">Dashboard</a>
-        <a routerLink="/hoteles" class="rounded-full px-3 py-2 text-slate-600 hover:bg-slate-100">Hoteles</a>
-        <a routerLink="/habitaciones" class="rounded-full px-3 py-2 text-slate-600 hover:bg-slate-100">Habitaciones</a>
-        <a routerLink="/reservas" class="rounded-full px-3 py-2 text-slate-600 hover:bg-slate-100">Reservas</a>
-      </nav>
-    </div>
-  </header>
-  <section class="min-h-[calc(100vh-4rem)]">
+<div class="min-h-screen flex flex-col bg-slate-50 text-slate-900">
+  <app-navbar></app-navbar>
+  <main class="flex-1">
     <router-outlet></router-outlet>
-  </section>
-</main>
+  </main>
+  <app-footer></app-footer>
+</div>
