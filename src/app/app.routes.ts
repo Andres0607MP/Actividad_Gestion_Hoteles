@@ -5,14 +5,15 @@ import { DashboardPage } from './pages/dashboard.page';
 import { HotelsPage } from './pages/hotels.page';
 import { RoomsPage } from './pages/rooms.page';
 import { ReservationsPage } from './pages/reservations.page';
+import { authGuard } from './guards';
 
 export const routes: Routes = [
   { path: '', redirectTo: 'login', pathMatch: 'full' },
   { path: 'login', component: LoginPage },
   { path: 'registro', component: RegisterPage },
-  { path: 'dashboard', component: DashboardPage },
-  { path: 'hoteles', component: HotelsPage },
-  { path: 'habitaciones', component: RoomsPage },
-  { path: 'reservas', component: ReservationsPage },
+  { path: 'dashboard', component: DashboardPage, canActivate: [authGuard] },
+  { path: 'hoteles', component: HotelsPage, canActivate: [authGuard] },
+  { path: 'habitaciones', component: RoomsPage, canActivate: [authGuard] },
+  { path: 'reservas', component: ReservationsPage, canActivate: [authGuard] },
   { path: '**', redirectTo: 'login' }
 ];
