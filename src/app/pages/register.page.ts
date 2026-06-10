@@ -1,6 +1,7 @@
 import { Component } from '@angular/core';
 import { ReactiveFormsModule, FormBuilder, FormGroup, Validators, AbstractControl, ValidationErrors } from '@angular/forms';
-import { RouterLink } from '@angular/router';
+import { RouterLink, Router } from '@angular/router';
+import { AuthService } from '../services/auth.service';
 
 @Component({
   selector: 'app-register-page',
@@ -175,14 +176,27 @@ import { RouterLink } from '@angular/router';
             </p>
           }
 
+          <!-- Error Message -->
+          @if (errorMessage) {
+            <div class="rounded-lg bg-red-50 p-3 text-xs text-red-700 border border-red-200 flex items-start gap-2">
+              <i class="fas fa-exclamation-triangle mt-0.5 flex-shrink-0"></i>
+              <span>{{ errorMessage }}</span>
+            </div>
+          }
+
           <!-- Submit Button -->
           <button
             type="submit"
-            [disabled]="registerForm.invalid"
+            [disabled]="registerForm.invalid || isLoading"
             class="w-full rounded-lg bg-emerald-600 py-2 font-semibold text-white transition hover:bg-emerald-700 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
           >
-            <i class="fas fa-user-check"></i>
-            Crear cuenta
+            @if (isLoading) {
+              <i class="fas fa-spinner fa-spin"></i>
+              <span>Creando cuenta...</span>
+            } @else {
+              <i class="fas fa-user-check"></i>
+              <span>Crear cuenta</span>
+            }
           </button>
         </form>
 
@@ -210,8 +224,14 @@ import { RouterLink } from '@angular/router';
 export class RegisterPage {
   registerForm: FormGroup;
   showPassword = false;
+  isLoading = false;
+  errorMessage = '';
 
-  constructor(private fb: FormBuilder) {
+  constructor(
+    private fb: FormBuilder,
+    private authService: AuthService,
+    private router: Router
+  ) {
     this.registerForm = this.fb.group({
       firstName: ['', [Validators.required, Validators.minLength(2)]],
       lastName: ['', [Validators.required, Validators.minLength(2)]],
@@ -284,8 +304,26 @@ export class RegisterPage {
 
   onSubmit(): void {
     if (this.registerForm.valid) {
-      console.log('Register:', this.registerForm.value);
-      // Aquí va la lógica de registro
+      this.isLoading = true;
+      this.errorMessage = '';
+
+      const credentials = {
+        email: this.registerForm.get('email')?.value,
+        password: this.registerForm.get('password')?.value,
+        firstName: this.registerForm.get('firstName')?.value,
+        lastName: this.registerForm.get('lastName')?.value,
+      };
+
+      this.authService.register(credentials).subscribe({
+        next: (response) => {
+          this.isLoading = false;
+          this.router.navigate(['/dashboard']);
+        },
+        error: (error) => {
+          this.isLoading = false;
+          this.errorMessage = error.message || 'Error al crear la cuenta. Intenta nuevamente.';
+        }
+      });
     }
   }
 }

@@ -1,6 +1,7 @@
 import { Component } from '@angular/core';
 import { ReactiveFormsModule, FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { RouterLink } from '@angular/router';
+import { RouterLink, Router } from '@angular/router';
+import { AuthService } from '../services/auth.service';
 
 @Component({
   selector: 'app-login-page',
@@ -89,14 +90,27 @@ import { RouterLink } from '@angular/router';
             </label>
           </div>
 
+          <!-- Error Message -->
+          @if (errorMessage) {
+            <div class="rounded-lg bg-red-50 p-3 text-xs text-red-700 border border-red-200 flex items-start gap-2">
+              <i class="fas fa-exclamation-triangle mt-0.5 flex-shrink-0"></i>
+              <span>{{ errorMessage }}</span>
+            </div>
+          }
+
           <!-- Submit Button -->
           <button
             type="submit"
-            [disabled]="loginForm.invalid"
+            [disabled]="loginForm.invalid || isLoading"
             class="w-full rounded-lg bg-sky-600 py-2 font-semibold text-white transition hover:bg-sky-700 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
           >
-            <i class="fas fa-sign-in-alt"></i>
-            Iniciar sesión
+            @if (isLoading) {
+              <i class="fas fa-spinner fa-spin"></i>
+              <span>Iniciando sesión...</span>
+            } @else {
+              <i class="fas fa-sign-in-alt"></i>
+              <span>Iniciar sesión</span>
+            }
           </button>
         </form>
 
@@ -135,8 +149,14 @@ import { RouterLink } from '@angular/router';
 export class LoginPage {
   loginForm: FormGroup;
   showPassword = false;
+  isLoading = false;
+  errorMessage = '';
 
-  constructor(private fb: FormBuilder) {
+  constructor(
+    private fb: FormBuilder,
+    private authService: AuthService,
+    private router: Router
+  ) {
     this.loginForm = this.fb.group({
       email: ['', [Validators.required, Validators.email]],
       password: ['', [Validators.required, Validators.minLength(6)]],
@@ -171,8 +191,24 @@ export class LoginPage {
 
   onSubmit(): void {
     if (this.loginForm.valid) {
-      console.log('Login:', this.loginForm.value);
-      // Aquí va la lógica de autenticación
+      this.isLoading = true;
+      this.errorMessage = '';
+
+      const credentials = {
+        email: this.loginForm.get('email')?.value,
+        password: this.loginForm.get('password')?.value,
+      };
+
+      this.authService.login(credentials).subscribe({
+        next: (response) => {
+          this.isLoading = false;
+          this.router.navigate(['/dashboard']);
+        },
+        error: (error) => {
+          this.isLoading = false;
+          this.errorMessage = error.message || 'Error al iniciar sesión. Intenta nuevamente.';
+        }
+      });
     }
   }
 }
