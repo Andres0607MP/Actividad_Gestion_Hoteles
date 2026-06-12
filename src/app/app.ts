@@ -1,12 +1,36 @@
-import { Component, signal } from '@angular/core';
+import { Component, OnInit, signal } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
+import { NgIf } from '@angular/common';
+import { Firestore, collection, getDocs } from '@angular/fire/firestore';
 
 @Component({
   selector: 'app-root',
-  imports: [RouterOutlet],
+  standalone: true,
+  imports: [RouterOutlet, NgIf],
   templateUrl: './app.html',
-  styleUrl: './app.css'
+  styleUrls: ['./app.css']
 })
-export class App {
+export class App implements OnInit {
   protected readonly title = signal('Actividad_Gestion_Hoteles');
+  protected readonly status = signal<'pending' | 'connected' | 'disconnected'>('pending');
+  protected readonly error = signal<string | null>(null);
+
+  constructor(private firestore: Firestore) {}
+
+  ngOnInit() {
+    this.checkConnection();
+  }
+
+  private async checkConnection() {
+    try {
+      const ref = collection(this.firestore, 'TEST');
+      await getDocs(ref);
+      this.status.set('connected');
+      this.error.set(null);
+    } catch (err) {
+      this.status.set('disconnected');
+      this.error.set(err instanceof Error ? err.message : String(err));
+      console.error('Firebase connection error:', err);
+    }
+  }
 }
