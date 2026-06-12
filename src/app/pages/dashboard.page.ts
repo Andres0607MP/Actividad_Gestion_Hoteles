@@ -1,6 +1,10 @@
 import { Component, OnInit } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { CommonModule } from '@angular/common';
+import { HotelService } from '../services/hotel.service';
+import { RoomService } from '../services/room.service';
+import { ReservationService } from '../services/reservation.service';
+import { Hotel, Room, Reservation } from '../models/data.model';
 
 interface StatCard {
   title: string;
@@ -83,26 +87,58 @@ interface StatCard {
         <div class="rounded-2xl bg-white p-8 shadow-md">
           <div class="flex items-center justify-between mb-6">
             <div>
-              <h2 class="text-2xl font-bold text-slate-900">Actividad reciente</h2>
-              <p class="text-sm text-slate-600 mt-1">Últimas acciones en tu plataforma</p>
+              <h2 class="text-2xl font-bold text-slate-900">Hoteles Recientes</h2>
+              <p class="text-sm text-slate-600 mt-1">Últimos hoteles agregados al sistema</p>
             </div>
-            <a href="#" class="text-sky-600 font-semibold hover:underline flex items-center gap-2">
-              Ver todo
+            <a [routerLink]="'/hoteles'" class="text-sky-600 font-semibold hover:underline flex items-center gap-2">
+              Ver todos
               <i class="fas fa-arrow-right"></i>
             </a>
           </div>
 
           <div class="space-y-3 border-t border-slate-200 pt-6">
-            @for (item of activities; track item.id) {
+            @for (hotel of recentHotels; track hotel.id) {
               <div class="flex items-center justify-between p-4 rounded-lg hover:bg-slate-50 transition">
                 <div class="flex items-center gap-4">
-                  <div class="w-2 h-2 rounded-full" [class]="item.color"></div>
+                  <i class="fas fa-hotel text-2xl text-sky-600"></i>
                   <div>
-                    <p class="font-medium text-slate-900">{{ item.title }}</p>
-                    <p class="text-xs text-slate-500">{{ item.time }}</p>
+                    <p class="font-medium text-slate-900">{{ hotel.name }}</p>
+                    <p class="text-xs text-slate-500">{{ hotel.city }}, {{ hotel.country }} • {{ hotel.rooms }} habitaciones</p>
                   </div>
                 </div>
-                <i [class]="item.icon + ' text-slate-400'"></i>
+                <div class="flex items-center gap-1">
+                  <i class="fas fa-star text-yellow-400 text-sm"></i>
+                  <span class="text-sm font-semibold text-slate-600">{{ hotel.rating }}</span>
+                </div>
+              </div>
+            }
+          </div>
+        </div>
+
+        <!-- Recent Reservations Section -->
+        <div class="rounded-2xl bg-white p-8 shadow-md">
+          <div class="flex items-center justify-between mb-6">
+            <div>
+              <h2 class="text-2xl font-bold text-slate-900">Reservas Confirmadas</h2>
+              <p class="text-sm text-slate-600 mt-1">Últimas reservas confirmadas</p>
+            </div>
+            <a [routerLink]="'/reservas'" class="text-sky-600 font-semibold hover:underline flex items-center gap-2">
+              Ver todas
+              <i class="fas fa-arrow-right"></i>
+            </a>
+          </div>
+
+          <div class="space-y-3 border-t border-slate-200 pt-6">
+            @for (reservation of recentReservations; track reservation.id) {
+              <div class="flex items-center justify-between p-4 rounded-lg hover:bg-slate-50 transition">
+                <div class="flex items-center gap-4">
+                  <i class="fas fa-calendar-check text-2xl text-emerald-600"></i>
+                  <div>
+                    <p class="font-medium text-slate-900">{{ reservation.guestName }}</p>
+                    <p class="text-xs text-slate-500">{{ formatDate(reservation.checkInDate) }} - {{ formatDate(reservation.checkOutDate) }}</p>
+                  </div>
+                </div>
+                <span class="text-sm font-semibold text-slate-600">\${{ reservation.totalPrice }}</span>
               </div>
             }
           </div>
@@ -162,85 +198,88 @@ interface StatCard {
 })
 export class DashboardPage implements OnInit {
   stats: StatCard[] = [];
-  activities: any[] = [];
+  recentHotels: Hotel[] = [];
+  recentReservations: Reservation[] = [];
+
+  constructor(
+    private hotelService: HotelService,
+    private roomService: RoomService,
+    private reservationService: ReservationService
+  ) {}
 
   ngOnInit(): void {
-    this.initializeStats();
-    this.initializeActivities();
+    this.loadStats();
+    this.loadRecentItems();
   }
 
-  initializeStats(): void {
-    this.stats = [
-      {
-        title: 'Hoteles',
-        value: 12,
-        description: 'Hoteles activos en el sistema',
-        icon: 'fas fa-hotel',
-        color: 'text-sky-600',
-        bgColor: 'bg-sky-600',
-        link: '/hoteles'
-      },
-      {
-        title: 'Habitaciones',
-        value: 287,
-        description: 'Habitaciones disponibles',
-        icon: 'fas fa-door-open',
-        color: 'text-emerald-600',
-        bgColor: 'bg-emerald-600',
-        link: '/habitaciones'
-      },
-      {
-        title: 'Reservas',
-        value: 45,
-        description: 'Reservas activas este mes',
-        icon: 'fas fa-calendar-alt',
-        color: 'text-purple-600',
-        bgColor: 'bg-purple-600',
-        link: '/reservas'
-      },
-      {
-        title: 'Huéspedes',
-        value: 156,
-        description: 'Huéspedes registrados',
-        icon: 'fas fa-users',
-        color: 'text-orange-600',
-        bgColor: 'bg-orange-600',
-        link: '/dashboard'
-      }
-    ];
+  loadStats(): void {
+    this.hotelService.getHotels().subscribe(hotels => {
+      this.roomService.getRooms().subscribe(rooms => {
+        this.reservationService.getReservations().subscribe(reservations => {
+          const confirmedReservations = reservations.filter(r => r.status === 'confirmed');
+          const availableRooms = rooms.filter(r => r.available).length;
+
+          this.stats = [
+            {
+              title: 'Hoteles',
+              value: hotels.length,
+              description: 'Hoteles activos en el sistema',
+              icon: 'fas fa-hotel',
+              color: 'text-sky-600',
+              bgColor: 'bg-sky-600',
+              link: '/hoteles'
+            },
+            {
+              title: 'Habitaciones',
+              value: availableRooms,
+              description: 'Habitaciones disponibles',
+              icon: 'fas fa-door-open',
+              color: 'text-emerald-600',
+              bgColor: 'bg-emerald-600',
+              link: '/habitaciones'
+            },
+            {
+              title: 'Reservas',
+              value: confirmedReservations.length,
+              description: 'Reservas confirmadas',
+              icon: 'fas fa-calendar-alt',
+              color: 'text-purple-600',
+              bgColor: 'bg-purple-600',
+              link: '/reservas'
+            },
+            {
+              title: 'Total Ingresos',
+              value: Math.floor(confirmedReservations.reduce((sum, r) => sum + r.totalPrice, 0)),
+              description: 'Ingresos por reservas',
+              icon: 'fas fa-dollar-sign',
+              color: 'text-orange-600',
+              bgColor: 'bg-orange-600',
+              link: '/dashboard'
+            }
+          ];
+        });
+      });
+    });
   }
 
-  initializeActivities(): void {
-    this.activities = [
-      {
-        id: 1,
-        title: 'Nueva reserva confirmada',
-        time: 'Hace 2 horas',
-        icon: 'fas fa-check',
-        color: 'bg-green-500'
-      },
-      {
-        id: 2,
-        title: 'Habitación agregada al Hotel Plaza',
-        time: 'Hace 5 horas',
-        icon: 'fas fa-plus',
-        color: 'bg-blue-500'
-      },
-      {
-        id: 3,
-        title: 'Huésped registrado: Juan Pérez',
-        time: 'Hace 1 día',
-        icon: 'fas fa-user-plus',
-        color: 'bg-purple-500'
-      },
-      {
-        id: 4,
-        title: 'Reserva cancelada',
-        time: 'Hace 2 días',
-        icon: 'fas fa-times',
-        color: 'bg-red-500'
-      }
-    ];
+  loadRecentItems(): void {
+    this.hotelService.getHotels().subscribe(hotels => {
+      this.recentHotels = hotels.slice(0, 4);
+    });
+
+    this.reservationService.getReservations().subscribe(reservations => {
+      this.recentReservations = reservations
+        .filter(r => r.status === 'confirmed')
+        .slice(0, 4);
+    });
+  }
+
+  formatDate(date: Date | string): string {
+    if (!date) return '';
+    const d = new Date(date);
+    const month = String(d.getMonth() + 1).padStart(2, '0');
+    const day = String(d.getDate()).padStart(2, '0');
+    return `${day}/${month}/${d.getFullYear()}`;
   }
 }
 
