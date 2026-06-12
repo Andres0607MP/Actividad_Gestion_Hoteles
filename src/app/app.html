@@ -1,20 +1,8 @@
-<main>
-  <header class="app-header">
-    <div class="app-title">
-      <h1>{{ title() }}</h1>
-    </div>
-    <div class="connection-status">
-      <span>Estado base de datos:</span>
-      <strong
-        [class.connected]="status() === 'connected'"
-        [class.disconnected]="status() === 'disconnected'"
-        [class.pending]="status() === 'pending'"
-      >
-        {{ status() === 'pending' ? 'Verificando...' : status() === 'connected' ? 'Conectado' : 'Desconectado' }}
-      </strong>
-    </div>
-    <p *ngIf="error()" class="connection-error">Error: {{ error() }}</p>
-  </header>
+<div class="min-h-screen flex flex-col bg-slate-50 text-slate-900">
+  <app-navbar></app-navbar>
+  <main class="flex-1">
+    <router-outlet></router-outlet>
+  </main>
+  <app-footer></app-footer>
+</div>
 
-  <router-outlet />
-</main>
