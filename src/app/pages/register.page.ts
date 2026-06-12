@@ -1,6 +1,8 @@
 import { Component } from '@angular/core';
 import { ReactiveFormsModule, FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { RouterLink } from '@angular/router';
+import { AuthService } from '../services/auth/auth.service';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-register-page',
@@ -184,15 +186,19 @@ export class RegisterPage {
   registerForm: FormGroup;
   showPassword = false;
 
-  constructor(private fb: FormBuilder) {
-    this.registerForm = this.fb.group({
-      name: ['', [Validators.required, Validators.minLength(3)]],
-      email: ['', [Validators.required, Validators.email]],
-      password: ['', [Validators.required, Validators.minLength(6)]],
-      confirmPassword: ['', [Validators.required]],
-      terms: [false, [Validators.requiredTrue]],
-    });
-  }
+  constructor(
+  private fb: FormBuilder,
+  private authService: AuthService,
+  private router: Router
+) {
+  this.registerForm = this.fb.group({
+    name: ['', [Validators.required, Validators.minLength(3)]],
+    email: ['', [Validators.required, Validators.email]],
+    password: ['', [Validators.required, Validators.minLength(6)]],
+    confirmPassword: ['', [Validators.required]],
+    terms: [false, [Validators.requiredTrue]],
+  });
+}
 
   togglePassword(): void {
     this.showPassword = !this.showPassword;
@@ -226,21 +232,51 @@ export class RegisterPage {
     return '';
   }
 
-  onSubmit(): void {
-    if (this.registerForm.valid) {
-      const password = this.registerForm.get('password')?.value;
-      const confirmPassword = this.registerForm.get('confirmPassword')?.value;
+  async onSubmit(): Promise<void> {
 
-      if (password !== confirmPassword) {
-        this.registerForm.get('confirmPassword')?.setErrors({ 'passwordMismatch': true });
-        return;
-      }
-
-      console.log('Register:', {
-        ...this.registerForm.value,
-        confirmPassword: undefined,
-      });
-      // Aquí va la lógica de registro
-    }
+  if (!this.registerForm.valid) {
+    return;
   }
+
+  const password = this.registerForm.get('password')?.value;
+  const confirmPassword = this.registerForm.get('confirmPassword')?.value;
+
+  if (password !== confirmPassword) {
+    this.registerForm.get('confirmPassword')?.setErrors({
+      passwordMismatch: true
+    });
+    return;
+  }
+
+  try {
+
+    const form = this.registerForm.value;
+
+    await this.authService.register(
+      form.email,
+      form.password,
+      form.name
+    );
+
+    alert('Usuario registrado correctamente');
+
+    this.router.navigate(['/login']);
+
+  } catch (error: any) {
+
+    console.error('Error Firebase:', error);
+
+    if (error.code === 'auth/email-already-in-use') {
+      alert('Este correo ya está registrado');
+    } else if (error.code === 'auth/invalid-email') {
+      alert('Correo inválido');
+    } else if (error.code === 'auth/weak-password') {
+      alert('La contraseña es muy débil');
+    } else {
+      alert('Error al registrar usuario');
+    }
+
+  }
+
+}
 }

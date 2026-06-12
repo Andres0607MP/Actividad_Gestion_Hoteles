@@ -12,7 +12,7 @@ export class AuthService {
 
   constructor(private auth: Auth, private firestore: Firestore) {
     this.user$ = user(this.auth);
-  }
+  } 
 
   register(email: string, password: string, nombre: string) {
   return createUserWithEmailAndPassword(this.auth, email, password)

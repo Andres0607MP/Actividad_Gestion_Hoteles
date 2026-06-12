@@ -15,6 +15,7 @@ export class App implements OnInit {
   protected readonly title = signal('Actividad_Gestion_Hoteles');
   protected readonly status = signal<'pending' | 'connected' | 'disconnected'>('pending');
   protected readonly error = signal<string | null>(null);
+  protected showErrorDetails = false;
 
   constructor(private firestore: Firestore) {}
 
