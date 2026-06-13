@@ -1,6 +1,9 @@
 {
   "name": "actividad-gestion-hoteles",
   "version": "0.0.0",
+  "private": true,
+  "packageManager": "npm@10.9.2",
+
   "scripts": {
     "ng": "ng",
     "start": "ng serve",
@@ -8,6 +11,7 @@
     "watch": "ng build --watch --configuration development",
     "test": "ng test"
   },
+
   "prettier": {
     "printWidth": 100,
     "singleQuote": true,
@@ -20,30 +24,29 @@
       }
     ]
   },
-  "private": true,
-  "packageManager": "npm@10.9.2",
+
   "dependencies": {
-    "@angular/build": "^20.3.28",
-    "@angular/cli": "^20.3.28",
     "@angular/common": "^20.3.25",
-    "@angular/compiler": "^21.1.0",
+    "@angular/compiler": "^20.3.25",
     "@angular/core": "^20.3.25",
     "@angular/fire": "^20.0.1",
     "@angular/forms": "^20.3.25",
     "@angular/platform-browser": "^20.3.25",
     "@angular/router": "^20.3.25",
-    "@fortawesome/fontawesome-free": "^7.2.0",
     "firebase": "^12.14.0",
     "rxjs": "~7.8.0",
     "tslib": "^2.3.0"
   },
+
   "devDependencies": {
-    "@angular/compiler-cli": "^21.1.0",
+    "@angular/cli": "^20.3.28",
+    "@angular/build": "^20.3.28",
+    "@angular/compiler-cli": "^20.3.25",
     "@tailwindcss/postcss": "^4.1.12",
-    "jsdom": "^27.1.0",
     "postcss": "^8.5.3",
     "tailwindcss": "^4.1.12",
     "typescript": "~5.9.2",
-    "vitest": "^4.0.8"
+    "vitest": "^4.0.8",
+    "jsdom": "^27.1.0"
   }
 }
