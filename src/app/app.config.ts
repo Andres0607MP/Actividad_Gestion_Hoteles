@@ -16,7 +16,11 @@ export const appConfig: ApplicationConfig = {
     provideBrowserGlobalErrorListeners(),
     provideRouter(routes),
     provideHttpClient(withInterceptors([authInterceptor])),
-    provideFirebaseApp(() => initializeApp(environment.firebase)),
+
+    // Firebase
+    provideFirebaseApp(() =>
+      initializeApp(environment.firebase)
+    ),
     provideAuth(() => getAuth()),
     provideFirestore(() => getFirestore())
   ]
