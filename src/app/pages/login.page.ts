@@ -1,7 +1,7 @@
 import { Component, inject } from '@angular/core';
 import { ReactiveFormsModule, FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Router, RouterLink } from '@angular/router';
-import { Auth, signInWithEmailAndPassword } from '@angular/fire/auth';
+import { AuthService } from '../services/auth/auth.service';
 
 @Component({
   selector: 'app-login-page',
@@ -108,7 +108,7 @@ export class LoginPage {
   loginForm: FormGroup;
   showPassword = false;
 
-  private auth = inject(Auth);
+  private authService = inject(AuthService);
   private router = inject(Router);
 
   constructor(private fb: FormBuilder) {
@@ -150,11 +150,7 @@ export class LoginPage {
     const { email, password } = this.loginForm.value;
 
     try {
-      const userCredential = await signInWithEmailAndPassword(
-        this.auth,
-        email,
-        password
-      );
+      const userCredential = await this.authService.login(email, password);
 
       console.log('Usuario logueado:', userCredential.user);
 
@@ -162,7 +158,16 @@ export class LoginPage {
 
     } catch (error: any) {
       console.error('Error login:', error.message);
-      alert('Correo o contraseña incorrectos');
+      
+      if (error.code === 'auth/user-not-found') {
+        alert('Usuario no encontrado');
+      } else if (error.code === 'auth/wrong-password') {
+        alert('Contraseña incorrecta');
+      } else if (error.code === 'auth/invalid-credential') {
+        alert('Correo o contraseña incorrectos');
+      } else {
+        alert('Error al iniciar sesión: ' + error.message);
+      }
     }
   }
 }

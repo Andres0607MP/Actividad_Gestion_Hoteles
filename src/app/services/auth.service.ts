@@ -1,6 +1,7 @@
-import { Injectable } from '@angular/core';
-import { BehaviorSubject, Observable, of } from 'rxjs';
-import { delay } from 'rxjs/operators';
+import { Injectable, inject } from '@angular/core';
+import { Auth, createUserWithEmailAndPassword, signOut } from '@angular/fire/auth';
+import { authState } from 'rxfire/auth';
+import { Observable } from 'rxjs';
 
 export interface AuthUser {
   id: string;
@@ -13,67 +14,35 @@ export interface AuthUser {
   providedIn: 'root'
 })
 export class AuthService {
-  private currentUser$ = new BehaviorSubject<AuthUser | null>(null);
-  private isLoggedIn$ = new BehaviorSubject<boolean>(false);
+  private auth = inject(Auth);
 
-  constructor() {
-    // Check if user was previously logged in
-    const savedUser = localStorage.getItem('authUser');
-    if (savedUser) {
-      this.currentUser$.next(JSON.parse(savedUser));
-      this.isLoggedIn$.next(true);
-    }
+  register(email: string, password: string, name: string): Promise<void> {
+    return createUserWithEmailAndPassword(this.auth, email, password)
+      .then(() => {
+        // Guardamos los datos del usuario para poder accederlos después
+        localStorage.setItem('userName', name);
+      });
   }
 
-  login(email: string, password: string): Observable<AuthUser> {
-    // Mock login - en producción sería Firebase
-    const user: AuthUser = {
-      id: Math.random().toString(),
-      email,
-      name: email.split('@')[0],
-      role: 'user'
-    };
-
-    return of(user).pipe(
-      delay(1000),
-      // No usar tap aquí para mantener puro
-    );
+  logout(): Promise<void> {
+    localStorage.removeItem('userName');
+    return signOut(this.auth);
   }
 
-  register(name: string, email: string, password: string): Observable<AuthUser> {
-    const user: AuthUser = {
-      id: Math.random().toString(),
-      email,
-      name,
-      role: 'user'
-    };
-
-    return of(user).pipe(delay(1000));
-  }
-
-  logout(): void {
-    localStorage.removeItem('authUser');
-    localStorage.removeItem('authToken');
-    this.currentUser$.next(null);
-    this.isLoggedIn$.next(false);
-  }
-
-  setCurrentUser(user: AuthUser): void {
-    this.currentUser$.next(user);
-    this.isLoggedIn$.next(true);
-    localStorage.setItem('authUser', JSON.stringify(user));
-    localStorage.setItem('authToken', 'mock-token-' + Date.now());
-  }
-
-  getCurrentUser(): Observable<AuthUser | null> {
-    return this.currentUser$.asObservable();
+  getCurrentUser(): Observable<any> {
+    return authState(this.auth);
   }
 
   isLoggedIn(): Observable<boolean> {
-    return this.isLoggedIn$.asObservable();
+    return new Observable(observer => {
+      authState(this.auth).subscribe(user => {
+        observer.next(!!user);
+      });
+    });
   }
 
   getToken(): string | null {
-    return localStorage.getItem('authToken');
+    // Firebase maneja tokens automáticamente
+    return null;
   }
 }
