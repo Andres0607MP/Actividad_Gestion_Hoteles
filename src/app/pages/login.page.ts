@@ -2,6 +2,7 @@ import { Component, inject } from '@angular/core';
 import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
 import { Router, RouterLink } from '@angular/router';
 import { AuthService } from '../services/auth/auth.service';
+import { ToastService } from '../services/toast.service';
 
 @Component({
   selector: 'app-login-page',
@@ -110,6 +111,7 @@ export class LoginPage {
 
   private authService = inject(AuthService);
   private router = inject(Router);
+  private toastService = inject(ToastService);
 
   constructor(private fb: FormBuilder) {
     this.loginForm = this.fb.group({
@@ -152,21 +154,20 @@ export class LoginPage {
     try {
       const userCredential = await this.authService.login(email, password);
 
-      console.log('Usuario logueado:', userCredential.user);
-
+      this.toastService.success('¡Bienvenido! Sesión iniciada correctamente');
       this.router.navigate(['/dashboard']);
 
     } catch (error: any) {
       console.error('Error login:', error.message);
       
       if (error.code === 'auth/user-not-found') {
-        alert('Usuario no encontrado');
+        this.toastService.error('Usuario no encontrado. Por favor, verifica tu correo o regístrate');
       } else if (error.code === 'auth/wrong-password') {
-        alert('Contraseña incorrecta');
+        this.toastService.error('Contraseña incorrecta. Intenta nuevamente');
       } else if (error.code === 'auth/invalid-credential') {
-        alert('Correo o contraseña incorrectos');
+        this.toastService.error('Correo o contraseña incorrectos');
       } else {
-        alert('Error al iniciar sesión: ' + error.message);
+        this.toastService.error('Error al iniciar sesión: ' + error.message);
       }
     }
   }

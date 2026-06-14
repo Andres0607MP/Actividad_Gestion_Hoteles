@@ -2,6 +2,7 @@ import { Component, inject } from '@angular/core';
 import { ReactiveFormsModule, FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { RouterLink, Router } from '@angular/router';
 import { AuthService } from '../services/auth/auth.service';
+import { ToastService } from '../services/toast.service';
 
 @Component({
   selector: 'app-register-page',
@@ -187,6 +188,7 @@ export class RegisterPage {
 
   private authService = inject(AuthService);
   private router = inject(Router);
+  private toastService = inject(ToastService);
 
   constructor(private fb: FormBuilder) {
     this.registerForm = this.fb.group({
@@ -242,6 +244,7 @@ export class RegisterPage {
       this.registerForm.get('confirmPassword')?.setErrors({
         passwordMismatch: true
       });
+      this.toastService.error('Las contraseñas no coinciden');
       return;
     }
 
@@ -250,20 +253,20 @@ export class RegisterPage {
       
       await this.authService.register(email, password, name);
 
-      alert('Usuario registrado correctamente');
-      this.router.navigate(['/login']);
+      this.toastService.success('¡Cuenta creada exitosamente! Redirigiendo a login...');
+      setTimeout(() => this.router.navigate(['/login']), 1500);
 
     } catch (error: any) {
       console.error('Error Firebase:', error);
 
       if (error.code === 'auth/email-already-in-use') {
-        alert('Este correo ya está registrado');
+        this.toastService.error('Este correo ya está registrado. Intenta con otro');
       } else if (error.code === 'auth/invalid-email') {
-        alert('Correo inválido');
+        this.toastService.error('El formato del correo no es válido');
       } else if (error.code === 'auth/weak-password') {
-        alert('La contraseña es muy débil (mínimo 6 caracteres)');
+        this.toastService.error('La contraseña es muy débil (mínimo 6 caracteres)');
       } else {
-        alert('Error al registrar usuario: ' + error.message);
+        this.toastService.error('Error al registrar: ' + error.message);
       }
     }
   }

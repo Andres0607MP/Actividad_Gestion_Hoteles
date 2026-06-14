@@ -41,6 +41,7 @@ import { Router } from '@angular/router';
 
           @if (message) {
             <div
+            
               [ngClass]="{
                 'bg-green-50 border-green-200 text-green-800':
                   messageType === 'success',

@@ -2,12 +2,13 @@ import { Component, OnInit, signal } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
 import { NavbarComponent } from './shared/navbar.component';
 import { FooterComponent } from './shared/footer.component';
+import { ToastContainerComponent } from './shared/toast-container.component';
 import { Firestore, collection, getDocs } from '@angular/fire/firestore';
 
 @Component({
   selector: 'app-root',
   standalone: true,
-  imports: [RouterOutlet, NavbarComponent, FooterComponent],
+  imports: [RouterOutlet, NavbarComponent, FooterComponent, ToastContainerComponent],
   templateUrl: './app.html',
   styleUrls: ['./app.css']
 })
