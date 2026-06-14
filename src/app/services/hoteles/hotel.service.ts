@@ -8,7 +8,7 @@ import { Hotel } from '../../models/hotel.model';
 })
 export class HotelService {
 
-  private collectionName = 'CBA_Hoteles';
+  private collectionName = 'hoteles';
 
   constructor(private firestore: Firestore) {}
 

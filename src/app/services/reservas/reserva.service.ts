@@ -8,7 +8,7 @@ import { Reserva } from '../../models/reserva.model';
 })
 export class ReservaService {
 
-  private collectionName = 'CBA_Reservas';
+  private collectionName = 'reservas';
 
   constructor(private firestore: Firestore) {}
 

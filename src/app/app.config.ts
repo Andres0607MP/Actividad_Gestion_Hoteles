@@ -15,12 +15,15 @@ export const appConfig: ApplicationConfig = {
   providers: [
     provideBrowserGlobalErrorListeners(),
     provideRouter(routes),
-    provideHttpClient(withInterceptors([authInterceptor])),
 
-    // Firebase
+    provideHttpClient(
+      withInterceptors([authInterceptor])
+    ),
+
     provideFirebaseApp(() =>
       initializeApp(environment.firebase)
     ),
+
     provideAuth(() => getAuth()),
     provideFirestore(() => getFirestore())
   ]

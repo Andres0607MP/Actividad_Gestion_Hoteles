@@ -8,7 +8,7 @@ import { Habitacion } from '../../models/habitacion.model';
 })
 export class HabitacionService {
 
-  private collectionName = 'CBA_Habitaciones';
+  private collectionName = 'habitaciones';
 
   constructor(private firestore: Firestore) {}
 

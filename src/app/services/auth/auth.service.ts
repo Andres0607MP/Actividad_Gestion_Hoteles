@@ -1,5 +1,12 @@
 import { Injectable } from '@angular/core';
-import { Auth, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, user } from '@angular/fire/auth';
+import {
+  Auth,
+  createUserWithEmailAndPassword,
+  signInWithEmailAndPassword,
+  signOut,
+  user
+} from '@angular/fire/auth';
+
 import { Firestore, doc, setDoc } from '@angular/fire/firestore';
 import { Observable } from 'rxjs';
 
@@ -12,24 +19,24 @@ export class AuthService {
 
   constructor(private auth: Auth, private firestore: Firestore) {
     this.user$ = user(this.auth);
-  } 
+  }
 
   register(email: string, password: string, nombre: string) {
-  return createUserWithEmailAndPassword(this.auth, email, password)
-    .then(async (userCredential) => {
+    return createUserWithEmailAndPassword(this.auth, email, password)
+      .then(async (userCredential) => {
 
-      const user = userCredential.user;
+        const u = userCredential.user;
 
-      await setDoc(doc(this.firestore, `CBA_Usuarios/${user.uid}`), {
-        id: user.uid,
-        nombre: nombre,
-        correo: email,
-        rol: 'usuario'
+        await setDoc(doc(this.firestore, `CBA_Usuarios/${u.uid}`), {
+          id: u.uid,
+          nombre,
+          correo: email,
+          rol: 'usuario'
+        });
+
+        return userCredential;
       });
-
-      return userCredential;
-    });
-}
+  }
 
   login(email: string, password: string) {
     return signInWithEmailAndPassword(this.auth, email, password);
@@ -38,14 +45,4 @@ export class AuthService {
   logout() {
     return signOut(this.auth);
   }
-
-  getCurrentUser() {
-    return this.auth.currentUser;
-  }
 }
-
-
-
-
-
-
