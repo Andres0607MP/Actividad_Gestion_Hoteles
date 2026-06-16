@@ -27,7 +27,7 @@ export class AuthService {
 
         const u = userCredential.user;
 
-        await setDoc(doc(this.firestore, `CBA_Usuarios/${u.uid}`), {
+        await setDoc(doc(this.firestore, `Usuarios/${u.uid}`), {
           id: u.uid,
           nombre,
           correo: email,
