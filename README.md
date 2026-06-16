@@ -1,45 +1,19 @@
-# Hotel Management System
+# Sistema de Gestión Hotelera
 
-A simple web application to manage hotels, rooms, and reservations.
+Una aplicación web sencilla para gestionar hoteles, habitaciones y reservas.
 
-## What is it?
+## ¿Qué es?
 
-This project helps hotel managers organize and track:
-- **Hotels**: Register and manage different hotels
-- **Rooms**: Add room details for each hotel
-- **Reservations**: Create, update, and track guest reservations
-- **Users**: User authentication and account management
+Este proyecto ayuda a los administradores de hoteles a organizar y controlar:
 
-## Quick Start
+- **Hoteles**: Registrar y administrar diferentes hoteles
+- **Habitaciones**: Agregar detalles de habitaciones para cada hotel
+- **Reservas**: Crear, actualizar y controlar las reservas de los huéspedes
+- **Usuarios**: Autenticación de usuarios y gestión de cuentas
 
-1. Install dependencies:
+## Inicio Rápido
+
+1. Instalar dependencias:
+
 ```bash
 npm install
-```
-
-2. Start the app:
-```bash
-npm start
-```
-
-3. Open your browser and go to `http://localhost:4200/`
-
-## Features
-
-- User registration and login
-- Create and manage hotels
-- Add rooms to each hotel
-- Track reservations with different statuses
-- Filter reservations by status
-- Simple and easy-to-use interface
-
-## Technology
-
-- **Frontend**: Angular
-- **Database**: Firebase Firestore
-- **Authentication**: Firebase Auth
-
-## Team Members
-
-- Hugo Andres Mancera
-- Daniel Camilo Luque
