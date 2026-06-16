@@ -43,10 +43,10 @@ import { ReservationService, Reservation } from '../services/reservation.service
               (change)="filterReservations()"
               class="px-4 py-2 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-sky-500 focus:border-transparent"
             >
-              <option value="">Todos los estados</option>
-              <option value="confirmed">Confirmadas</option>
-              <option value="pending">Pendientes</option>
-              <option value="cancelled">Canceladas</option>
+              <option value="">All Status</option>
+              <option value="confirmed">Confirmed</option>
+              <option value="pending">Pending</option>
+              <option value="cancelled">Cancelled</option>
             </select>
             <button
               (click)="resetFilters()"
@@ -251,16 +251,16 @@ import { ReservationService, Reservation } from '../services/reservation.service
                 </div>
 
                 <div>
-                  <label class="block text-sm font-medium text-slate-700 mb-1">Estado</label>
+                  <label class="block text-sm font-medium text-slate-700 mb-1">Status</label>
                   <select
                     [(ngModel)]="formData.status"
                     name="status"
                     class="w-full px-4 py-2 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-sky-500"
                     required
                   >
-                    <option value="pending">Pendiente</option>
-                    <option value="confirmed">Confirmada</option>
-                    <option value="cancelled">Cancelada</option>
+                    <option value="pending">Pending</option>
+                    <option value="confirmed">Confirmed</option>
+                    <option value="cancelled">Cancelled</option>
                   </select>
                 </div>
 

@@ -220,7 +220,7 @@ const reservasData = [
     adultos: 2,
     ninos: 0,
     precioTotal: 1000,
-    estado: 'confirmada',
+    estado: 'confirmed',
     notas: 'Llegada tardía',
   },
   {
@@ -234,7 +234,7 @@ const reservasData = [
     adultos: 1,
     ninos: 2,
     precioTotal: 400,
-    estado: 'confirmada',
+    estado: 'confirmed',
     notas: 'Familia',
   },
 ];

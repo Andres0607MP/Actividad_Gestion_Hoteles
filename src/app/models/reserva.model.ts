@@ -4,5 +4,5 @@ export interface Reserva {
   habitacionId: string;
   fechaEntrada: any;
   fechaSalida: any;
-  estado: 'pendiente' | 'confirmada' | 'cancelada';
+  estado: 'pending' | 'confirmed' | 'cancelled';
 }

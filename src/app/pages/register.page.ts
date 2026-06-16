@@ -253,8 +253,8 @@ export class RegisterPage {
       
       await this.authService.register(email, password, name);
 
-      this.toastService.success('¡Cuenta creada exitosamente! Redirigiendo a login...');
-      setTimeout(() => this.router.navigate(['/login']), 1500);
+      this.toastService.success('¡Cuenta creada exitosamente! Redirigiendo al dashboard...');
+      setTimeout(() => this.router.navigate(['/dashboard']), 1500);
 
     } catch (error: any) {
       console.error('Error Firebase:', error);
